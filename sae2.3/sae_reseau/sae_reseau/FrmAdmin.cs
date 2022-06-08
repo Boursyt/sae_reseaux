@@ -10,13 +10,16 @@ using System.Windows.Forms;
 using CLassLibrairieBDD;
 using MySql.Data.MySqlClient;
 using MySql.Data;
-using sae_reseau;
 
 namespace CLassLibrairieBDD
 {
-
     public partial class FrmAdmin : Form
     {
+        public static class Global
+        {
+            public static string sql;
+        }
+
         public FrmAdmin()
         {
             InitializeComponent();
@@ -24,7 +27,7 @@ namespace CLassLibrairieBDD
 
         private void cmdValider_Click(object sender, EventArgs e)//Evénement qui se déclenche lors d'un clic sur le bouton valider
         {
-            if (cbxTable.SelectedIndex==-1)//Si rien n'est sélectionné dans la combobox
+            if (cbxTable.SelectedIndex == -1)//Si rien n'est sélectionné dans la combobox
             {
                 MessageBox.Show("Veuillez sélectionner une table");//On affiche un message d'erreur
             }
@@ -71,13 +74,10 @@ namespace CLassLibrairieBDD
                 cmdModifier.Enabled = true;//On active le bouton modifier
                 cmdSupr.Enabled = true;//On active le bouton supprimer
             }
-            
+
 
 
         }
-
-
-
 
 
         private void masquerEntrer()
@@ -93,13 +93,12 @@ namespace CLassLibrairieBDD
             txt_admin1.Visible = false;//On rend la textbox visible
             txt_admin2.Visible = false;
 
-           
+
         }
 
-       
+
         private void CmdAjouter_Click(object sender, EventArgs e)
         {
-            string sql = "";//On crée une variable de type string sql qui est vide
 
             masquerEntrer();//On masque tout les labels
 
@@ -110,8 +109,8 @@ namespace CLassLibrairieBDD
 
             txt_admin2.Size = new Size(500, txt_admin2.Size.Height);//On change la position de la textbox2
 
-            txt_admin1.ForeColor = Color.Gray;//On change la couleur de la saisie en gris
-            txt_admin2.ForeColor = Color.Gray;
+            txt_admin1.ForeColor = Color.Blue;//On change la couleur de la saisie en gris
+            txt_admin2.ForeColor = Color.Blue;
             txt_admin1.Text = "Entrer le nom des champs ";//On change le texte des textbox
             txt_admin2.Text = "Entrer la valeur des champs";
 
@@ -121,15 +120,10 @@ namespace CLassLibrairieBDD
             lbl_admin5.Visible = true;
             txt_admin1.Visible = true;
             txt_admin2.Visible = true;
-
-            sql = lbl_admin1.Text + txt_admin1.Text + lbl_admin2.Text + lbl_admin3.Text + txt_admin2.Text + lbl_admin5.Text + ";";//On prend la saisie utilisateur pour la contenir dans une variable
-
-            lbl_admin4.Text = sql;//on affiche la commande SQL final à l'utilisateur
         }
 
         private void CmdModifier_Click(object sender, EventArgs e)
         {
-            string sql = "";//On crée une variable de type string sql qui est vide
 
             masquerEntrer();//On masque tout les labels
 
@@ -148,49 +142,49 @@ namespace CLassLibrairieBDD
             txt_admin1.Visible = true;
             txt_admin2.Visible = true;
 
-            sql = lbl_admin1.Text + txt_admin1.Text + " " +lbl_admin3.Text + txt_admin2.Text + ';';//On prend la saisie utilisateur pour la contenir dans une variable
-
-            lbl_admin4.Text = sql;//On affiche la commande SQL final à l'utilisateur
-
         }
 
         private void CmdSupr_Click(object sender, EventArgs e)
         {
-            string sql = "";// On crée une variable de type string sql qui est vide
 
             masquerEntrer();//On masque tout les labels
 
-            txt_admin1.Location = new Point(180,txt_admin1.Location.Y);//On change la position de la textbox2
+            txt_admin1.Location = new Point(180, txt_admin1.Location.Y);//On change la position de la textbox2
 
             lbl_admin1.Text = $"DELETE FROM {cbxTable.Text} WHERE";//On change le texte du label1
 
 
-            txt_admin1.ForeColor = Color.Gray;//On change la couleur de la saisie en gris
+            txt_admin1.ForeColor = Color.Red;//On change la couleur de la saisie en gris
             txt_admin1.Text = "Entrer la condition de selection";//On change le texte da la textbox1
 
             lbl_admin1.Visible = true;//On rend le label visible
             txt_admin1.Visible = true;//On rend la textbox visible
 
-            sql = lbl_admin1.Text + " " + txt_admin1.Text + ';';//On prend la saisie utilisateur pour la contenir dans une variable
-
-            lbl_admin4.Text = sql;
         }
 
         private void cmdButtonSQLValide_Click(object sender, EventArgs e)
         {
-            string sql = lbl_admin4.Text;//On copie le contenu du label 4 qui contient la commande SQL
-
+            if (txt_admin1.ForeColor == Color.Blue)//Si le mode sélectionner est "ajouter"
+            {
+                Global.sql = lbl_admin1.Text + txt_admin1.Text + lbl_admin2.Text + lbl_admin3.Text + txt_admin2.Text + lbl_admin5.Text + ";";//On prend la saisie utilisateur pour la contenir dans une variable
+            }
+            if (txt_admin1.ForeColor == Color.Gray)//Si le mode sélectionner est "modifier"
+            {
+                Global.sql = lbl_admin1.Text + txt_admin1.Text + " " + lbl_admin3.Text + txt_admin2.Text + ';';//On prend la saisie utilisateur pour la contenir dans une variable
+            }
+            if (txt_admin1.ForeColor == Color.Red)//Si le mode sélectionner est "supprimer"
+            {
+                Global.sql = lbl_admin1.Text + " " + txt_admin1.Text + ';';//On prend la saisie utilisateur pour la contenir dans une variable
+            }
+            lbl_admin4.Text = Global.sql;//on affiche la commande SQL final à l'utilisateur
             lbl_admin4.Visible = true;//On rend visible le label 4
 
-            bool executionSQL = BDD.executeSQL(sql); //Execute la commande SQL dans la base de données
-            if (executionSQL == false) // Si la commande SQL n'a pas reussi a s'execute 
-            {
-                string message = "Erreur detecte dans la saisie de la commande SQL !"; // message d'erreur
-                string caption = "Erreur execution commande SQL"; //titre de la message box
-                MessageBoxButtons buttons = MessageBoxButtons.OK; // type de message avec un seul bouton ok
+            MySqlCommand cmd = new MySqlCommand(Global.sql, BDD.macnx);//On execute la commande sql
+            MySqlDataReader rdr = cmd.ExecuteReader();//On récupére le résultat de la commande SQL
 
-                MessageBox.Show(message,caption,buttons); //affichage de la message box d'erreur
-            }
+            rdr.Close();//On libére la mémoire
+            cmd.Dispose();//On libère la mémoire
+
         }
 
         private void textBox1_Click(object sender, EventArgs e)
@@ -201,6 +195,22 @@ namespace CLassLibrairieBDD
         private void textBox2_Click(object sender, EventArgs e)
         {
             txt_admin2.Text = "";//Cache le texte présent dans la textbox1 lors de la saisie
+        }
+
+        private void FrmAdmin_Load(object sender, EventArgs e)
+        {
+               bool ConnexionOuverte;
+
+            ConnexionOuverte = BDD.initConnexion();//On ouvre la connection avec la base de données
+
+            if (ConnexionOuverte)//Si le bool ConnexionOuverte est vrai donc que la connexion est un succés
+            {
+                //La connexion est un succés
+            }
+            else
+            {
+                MessageBox.Show("La connexion à la base de donnée a échoué.");//On affiche un message d'erreur si la connexion a échoué
+            }
         }
     }
 
