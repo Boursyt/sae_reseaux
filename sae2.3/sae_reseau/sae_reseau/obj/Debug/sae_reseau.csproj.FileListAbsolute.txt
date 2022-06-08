@@ -1,0 +1,7 @@
+C:\Users\hypto\OneDrive\Bureau\sae2.3\sae_reseau\sae_reseau\obj\Debug\sae_reseau.csproj.AssemblyReference.cache
+C:\Users\hypto\OneDrive\Bureau\sae2.3\sae_reseau\sae_reseau\obj\Debug\sae_reseau.csproj.SuggestedBindingRedirects.cache
+C:\Users\hypto\OneDrive\Bureau\sae2.3\sae_reseau\sae_reseau\obj\Debug\CLassLibrairieBDD.FrmAdmin.resources
+C:\Users\hypto\OneDrive\Bureau\sae2.3\sae_reseau\sae_reseau\obj\Debug\sae_reseau.Properties.Resources.resources
+C:\Users\hypto\OneDrive\Bureau\sae2.3\sae_reseau\sae_reseau\obj\Debug\sae_reseau.csproj.GenerateResource.cache
+C:\Users\hypto\OneDrive\Bureau\sae2.3\sae_reseau\sae_reseau\obj\Debug\sae_reseau.csproj.CoreCompileInputs.cache
+C:\Users\hypto\OneDrive\Bureau\sae2.3\sae_reseau\sae_reseau\obj\Debug\sae_reseau.Form1.resources
